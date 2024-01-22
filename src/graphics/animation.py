@@ -22,27 +22,36 @@ class Spritesheet:
 
 
 class Animation:
-    def __init__(self, frame_specs, filename, animation_speed):
+    def __init__(self, filename, animation_speed):
         """
         frame_specs: List of tuples, each tuple containing (x, y, width, height) of a frame on the spritesheet
         filename: Path to the spritesheet file
         animation_speed: Time in milliseconds to show each frame
         """
-        self.spritesheet = Spritesheet(filename)
-        self.frames = self.load_frames(frame_specs)
+        self.filename = filename + '.png'
+        self.json_filepath = filename + '.json'
+        self.spritesheet = Spritesheet(self.filename)
+        self.frames = self.load_frames_from_json()
         self.current_frame = 0
         self.last_updated = pygame.time.get_ticks()
         self.animation_speed = animation_speed
 
-    def load_frames(self, frame_specs):
+    def load_frames_from_json(self):
         images = []
-        for spec in frame_specs:
-            try:
-                x, y, width, height = spec
-                images.append(self.spritesheet.get_sprite(x, y, width, height))
-            except Exception as e:
-                # Handle the exception as appropriate for your use case
-                print(f"Error loading sprite: {e}")
+        try:
+            with open(self.json_filepath, 'r') as file:
+                data = json.load(file)
+                frame_specs = data.get('frame_specs', [])
+
+            for spec in frame_specs:
+                if len(spec) == 4:  # Ensure spec has 4 elements: x, y, width, height
+                    images.append(self.spritesheet.get_sprite(*spec))
+                else:
+                    print(f"Invalid frame specification: {spec}")
+
+        except Exception as e:
+            print(f"Error loading frames from JSON: {e}")
+
         return images
 
     def update(self, flip_x=False):

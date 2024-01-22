@@ -7,32 +7,17 @@ class Player(Entity):
         super(Player, self).__init__(x, y) #probably put default player image here
         self.screen_width, self.screen_height = display_size
         self.player_speed = 3
-        self.idle_sprite_props = [
-            (0, 0 , 32, 35), 
-            (0, 35, 32, 35), 
-            (0, 70, 32, 35),
-            (0, 105, 32, 35),
-            (0, 140, 32, 35),
-            (0, 175, 32, 35)
-        ]
-        self.run_sprite_props = [
-            (0,0,32,35),
-            (0, 35, 32, 34),
-            (0, 69, 32, 33 ),
-            (0, 102, 32, 36),
-            (0, 138, 34, 37),
-            (0, 175, 34, 34),
-            (0, 209, 34, 33),
-            (0, 244, 34, 37)
-        ]
-        self.idle_animation = Animation(self.idle_sprite_props, "assets/player/idle.png", 100)
-        self.run_animation = Animation(self.run_sprite_props, "assets/player/run.png", 100)
+        self.idle_animation = Animation("assets/player/idle", 100)
+        self.run_animation = Animation("assets/player/run", 100)
+
         self.animation_state = "idle"
         self.facing_right = True
+
         self.image = self.idle_animation.update()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        
         self.mask = pygame.mask.from_surface(self.image)  # Create a mask
         self.mask = pygame.mask.from_surface(self.image)
 
