@@ -1,16 +1,18 @@
 import pygame, sys, os
 from pygame.locals import *
-from characters.Ally import Player
-from controller import PlayerController
-from settings import GameSettings
+from src.characters.Ally import Player
+from .controller import PlayerController
+from .settings import GameSettings
 
 class Game():
     def __init__(self):
         pygame.init()
-        self.window = pygame.display.set_mode((1920, 1080),display=SCALED)
-        self.isRunning = False
-        self.player = Player(0,0)
         self.settings = GameSettings()
+        self.window = pygame.display.set_mode(self.settings.display_size)
+        self.isRunning = False
+        self.player = Player(0,0, self.settings.display_size)
+        self.clock = pygame.time.Clock()
+        self.group = pygame.sprite.Group(self.player)
         self.controller = PlayerController(self.player, self.settings.key_bindings)
         pygame.display.set_caption("First Game")
         self.screen = pygame.display.get_surface()
@@ -20,16 +22,22 @@ class Game():
         self.loop()
     
     def loop(self):
-        while isRunning:
-            self.controller.input(pygame.event.get()) # main event handler loop
-            # update sprite group
-            # pygame.display.update()
-            #self.render()
-            pygame.display.flip()
+        while self.isRunning:
+            # Event handling loop
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.isRunning = False
+            
+            # Handle continuous key presses
+            self.controller.handle_keys()
+            self.group.update()  # Update all sprites
+            self.render()  # Render the scene
+            pygame.display.flip()  # Update the full display
+            self.clock.tick(60)  # Maintain 60 FPS
 
     def render(self):
-        pass
-        # self.screen.blit()
+        self.screen.fill((0, 0, 0))  # Fill the screen with black (or any bg color)
+        self.group.draw(self.screen)  # Draw all sprites
 
 
     

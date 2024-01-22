@@ -5,17 +5,18 @@ from pygame.locals import *
 class PlayerController():
     def __init__(self, player, key_bindings):
         self.player = player
-        self.key_bindings = key_bindings
+        self.bindings = key_bindings
 
-    def input(self, events):
-        for event in events:
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit(0)
-            elif event.type == KEYDOWN:  # Check for key press
-                for action in ["left", "right", "up", "down"]:
-                    if event.key == self.key_bindings.getKey(action):
-                        self.player.move(action)
-            elif event.type == KEYUP:
-                self.player.move("idle")
-                # Handle other keys as needed
+    def handle_keys(self):
+        keys = pygame.key.get_pressed()
+        if keys[self.bindings.get_key("left")]:
+            self.player.move("left")
+        if keys[self.bindings.get_key("right")]:
+            self.player.move("right")
+        if keys[self.bindings.get_key("up")]:
+            self.player.move("up")
+        if keys[self.bindings.get_key("down")]:
+            self.player.move("down")
+        if not any([keys[self.bindings.get_key("left")], keys[self.bindings.get_key("right")],
+                    keys[self.bindings.get_key("up")], keys[self.bindings.get_key("down")]]):
+            self.player.move("idle")

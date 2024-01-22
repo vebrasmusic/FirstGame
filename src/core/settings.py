@@ -6,8 +6,8 @@ class KeyBindings():
         self.bindings = {}
         self.bindings["up"] = K_w
         self.bindings["down"] = K_s
-        self.bindings["left"] = K_d
-        self.bindings["right"] = K_a
+        self.bindings["right"] = K_d
+        self.bindings["left"] = K_a
     
     def changeBindings(self, key, new_binding):
         if self.check_conflicting(new_binding):
@@ -26,11 +26,11 @@ class KeyBindings():
     def getAllBindings(self):
         return self.bindings
 
-    def getKey(self, action):
+    def get_key(self, action):
         return self.bindings.get(action, None)
 
-class GameSettings:
+class GameSettings():
     def __init__(self):
         self.key_bindings = KeyBindings()
+        self.display_size = (800, 400)
 
-    
