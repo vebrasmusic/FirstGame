@@ -22,14 +22,14 @@ class Spritesheet:
 
 
 class Animation:
-    def __init__(self, filename, animation_speed):
+    def __init__(self, graphic_filepath, json_filepath,  animation_speed):
         """
         frame_specs: List of tuples, each tuple containing (x, y, width, height) of a frame on the spritesheet
         filename: Path to the spritesheet file
         animation_speed: Time in milliseconds to show each frame
         """
-        self.filename = filename + '.png'
-        self.json_filepath = filename + '.json'
+        self.filename = graphic_filepath
+        self.json_filepath = json_filepath
         self.spritesheet = Spritesheet(self.filename)
         self.frames = self.load_frames_from_json()
         self.current_frame = 0
@@ -66,3 +66,36 @@ class Animation:
             frame = pygame.transform.flip(frame, True, False)
 
         return frame
+
+
+class ShootingAnimation(Animation):
+    def __init__(self, graphic_filepath, json_filepath, animation_speed):
+        super().__init__(graphic_filepath, json_filepath, animation_speed)
+        self.playing = False
+
+    def start(self):
+        # Always restart the animation when this method is called
+        self.playing = True
+        self.current_frame = 0
+    
+    def is_finished(self):
+        return self.current_frame == len(self.frames) - 1
+
+    def update(self, flip_x=False):
+        if not self.playing:
+            return self.frames[0]  # Return the first frame when not playing
+
+        now = pygame.time.get_ticks()
+        if now - self.last_updated > self.animation_speed:
+            self.last_updated = now
+            if self.current_frame < len(self.frames) - 1:
+                self.current_frame += 1
+            else:
+                self.playing = False  # Reset playing state when animation finishes
+
+        frame = self.frames[self.current_frame]
+        if flip_x:
+            frame = pygame.transform.flip(frame, True, False)
+
+        return frame
+

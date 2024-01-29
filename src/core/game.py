@@ -27,7 +27,6 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.isRunning = False
-            
             # Handle continuous key presses
             self.controller.handle_keys()
             self.group.update()  # Update all sprites

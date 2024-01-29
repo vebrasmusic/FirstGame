@@ -17,6 +17,9 @@ class PlayerController():
             self.player.move("up")
         if keys[self.bindings.get_key("down")]:
             self.player.move("down")
+        # if keys[self.bindings.get_key("action")]:
+        #     self.player.action()
         if not any([keys[self.bindings.get_key("left")], keys[self.bindings.get_key("right")],
                     keys[self.bindings.get_key("up")], keys[self.bindings.get_key("down")]]):
             self.player.move("idle")
+        
