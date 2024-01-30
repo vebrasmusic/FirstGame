@@ -43,6 +43,8 @@ class Game():
 
             # Handle continuous key presses
             self.controller.handle_keys(events)
+
+            self.level1.update(self.player.rect)
             self.group.update()  # Update all sprites
             self.render()  # Render the scene
             pygame.display.flip()  # Update the full display
