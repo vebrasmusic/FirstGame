@@ -1,6 +1,7 @@
 import pygame
 from .Entity import Entity
 from src.graphics.animation import *
+from src.audio.sounds import PlayerSounds
 
 class Player(Entity):
     
@@ -10,7 +11,7 @@ class Player(Entity):
         self.player_scale = 0.6
         self.player_speed = 3 * (1 - self.player_scale)
         self.idle_animation = Animation("assets/player/idle.png", "assets/player/idle.json", 100, self.player_scale)
-        self.run_animation =  Animation("assets/player/walk.png", "assets/player/walk.json", 100,  self.player_scale)
+        self.run_animation =  Animation("assets/player/walk.png", "assets/player/walk.json", 50,  self.player_scale)
 
         self.animation_state = "idle"
         self.facing_right = True
@@ -22,6 +23,10 @@ class Player(Entity):
 
         self.mask = pygame.mask.from_surface(self.image)  # Create a mask
         self.level_type = "outside"
+
+        self.sounds = PlayerSounds("assets/audio/player/walk")
+        self.sound_cooldown = 0  # Add a cooldown counter for the sound
+        self.cooldown_factor = 10
 
 
     def set_level_type(self, level_type):
@@ -44,22 +49,33 @@ class Player(Entity):
         return min_x, min_y, max_x - min_x, max_y - min_y
 
     def move(self, direction):
-
         if self.level_type == "inside":
             if direction == "left":
                 self.rect.x = max(self.rect.x - self.player_speed, -110)
                 self.facing_right = False
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "right":
                 self.rect.x = min(self.rect.x + self.player_speed, self.screen_width - self.rect.width+110)
                 self.facing_right = True
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "down":
                 self.rect.y = min(self.rect.y + self.player_speed, self.screen_height - self.rect.height+80)
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "up":
                 self.rect.y = max(self.rect.y - self.player_speed,  -80)
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "idle":
                 self.animation_state = "idle"
         else:
@@ -67,10 +83,16 @@ class Player(Entity):
                 self.rect.x = max(self.rect.x - self.player_speed, -110)
                 self.facing_right = False
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "right":
                 self.rect.x = min(self.rect.x + self.player_speed, self.screen_width - self.rect.width+110)
                 self.facing_right = True
                 self.animation_state = "running"
+                if self.sound_cooldown <= 0:
+                    self.sounds.play_walk_sound()
+                    self.sound_cooldown = self.cooldown_factor
             elif direction == "idle":
                 self.animation_state = "idle"
 
@@ -87,6 +109,9 @@ class Player(Entity):
 
         # Update the mask based on the current frame
         self.mask = pygame.mask.from_surface(self.image)
+
+        if self.sound_cooldown > 0:
+            self.sound_cooldown -= 1
 
 
 

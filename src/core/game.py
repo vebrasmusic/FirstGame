@@ -36,11 +36,13 @@ class Game():
     def loop(self):
         while self.isRunning:
             # Event handling loop
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.isRunning = False
+
             # Handle continuous key presses
-            self.controller.handle_keys()
+            self.controller.handle_keys(events)
             self.group.update()  # Update all sprites
             self.render()  # Render the scene
             pygame.display.flip()  # Update the full display

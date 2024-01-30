@@ -73,6 +73,13 @@ class Level():
         self.objects = LevelObjects(self.level_data)
         self.player_spawn = self.objects.spawn_point
 
+        self.start_music()
+
+        
+    def start_music(self):
+        pygame.mixer.music.load("assets/audio/ambience/level1.wav")
+        pygame.mixer.music.play(-1)
+
     
     def render_background(self, screen):
         if self.bg_image:
