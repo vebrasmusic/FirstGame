@@ -22,12 +22,13 @@ class Spritesheet:
 
 
 class Animation:
-    def __init__(self, graphic_filepath, json_filepath,  animation_speed):
+    def __init__(self, graphic_filepath, json_filepath,  animation_speed, scale):
         """
         frame_specs: List of tuples, each tuple containing (x, y, width, height) of a frame on the spritesheet
         filename: Path to the spritesheet file
         animation_speed: Time in milliseconds to show each frame
         """
+        self.scale = scale
         self.filename = graphic_filepath
         self.json_filepath = json_filepath
         self.spritesheet = Spritesheet(self.filename)
@@ -35,7 +36,7 @@ class Animation:
         self.current_frame = 0
         self.last_updated = pygame.time.get_ticks()
         self.animation_speed = animation_speed
-
+        
     def load_frames_from_json(self):
         images = []
         try:
@@ -44,8 +45,8 @@ class Animation:
                 frame_specs = data.get('frame_specs', [])
 
             for spec in frame_specs:
-                if len(spec) == 4:  # Ensure spec has 4 elements: x, y, width, height
-                    images.append(self.spritesheet.get_sprite(*spec))
+                if len(spec) == 4:
+                    images.append(self.spritesheet.get_sprite(*spec, self.scale))
                 else:
                     print(f"Invalid frame specification: {spec}")
 

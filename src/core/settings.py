@@ -33,5 +33,17 @@ class KeyBindings():
 class GameSettings():
     def __init__(self):
         self.key_bindings = KeyBindings()
-        self.display_size = (544, 400)
+
+        self.base_resolution = (640, 480)
+        self.scale_factor = 2
+        self.scaled_resolution = (self.base_resolution[0] * self.scale_factor,
+                                  self.base_resolution[1] * self.scale_factor)
+
+
+                                  # Aspect ratio check
+        base_aspect_ratio = self.base_resolution[0] / self.base_resolution[1]
+        scaled_aspect_ratio = self.scaled_resolution[0] / self.scaled_resolution[1]
+        print("Base Aspect Ratio:", base_aspect_ratio, "Scaled Aspect Ratio:", scaled_aspect_ratio)
+
+        
 

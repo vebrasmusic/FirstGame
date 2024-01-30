@@ -7,9 +7,10 @@ class Player(Entity):
     def __init__(self, x, y, display_size):
         super(Player, self).__init__(x, y) #probably put default player image here
         self.screen_width, self.screen_height = display_size
-        self.player_speed = 3
-        self.idle_animation = Animation("assets/player/idle.png", "assets/player/idle.json", 100)
-        self.run_animation =  Animation("assets/player/walk.png", "assets/player/walk.json", 100)
+        self.player_scale = 0.6
+        self.player_speed = 3 * (1 - self.player_scale)
+        self.idle_animation = Animation("assets/player/idle.png", "assets/player/idle.json", 100, self.player_scale)
+        self.run_animation =  Animation("assets/player/walk.png", "assets/player/walk.json", 100,  self.player_scale)
 
         self.animation_state = "idle"
         self.facing_right = True
