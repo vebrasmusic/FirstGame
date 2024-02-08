@@ -1,11 +1,23 @@
-import pygame, sys, os
-from pygame.locals import *
-from .settings import GameSettings
-from src.objects.levelObjects import *
-from src.graphics.animation import *
+'''
+This module is responsible for loading and rendering the level,
+including the terrain and objects.
+
+Also, it is responsible for loading the level data from a file and
+creating the level objects based on that data.
+'''
+
 import json
+import pygame
+from pygame.locals import *
+from src.objects.levelObjects import Door
+#from src.graphics.animation import *
+
 
 class LevelTerrain:
+    '''
+    this class is responsible for loading and rendering the terrain in the level
+    how: it takes the level data and renders the tile layers
+    '''
     def __init__(self, level_data):
         self.level_data = level_data
         self.tileset_image = pygame.image.load("assets/levels/tileset.png")
@@ -32,7 +44,10 @@ class LevelTerrain:
                     screen.blit(self.tileset_image, (x * tile_width, y * tile_height), tile_rect)
 
 
-class LevelObjects:
+class LevelObjects():
+    '''
+    this class is responsible for loading and rendering the objects in the level
+    '''
     def __init__(self, level_data):
         self.level_data = level_data
         self.door_fragments = {}
@@ -40,10 +55,6 @@ class LevelObjects:
         self.spawn_point = None
         self.tileset_image = pygame.image.load("assets/levels/tileset.png")
         self.load_objects()
-
-        self.door_text_coords = (0,0)
-
-        self.door_interact_text = AnimatedText(self.door_text_coords, "assets/text/door_interact.png","assets/text/door_interact.json", 300, 0.3, "door_interact")
 
     def load_objects(self):
         for layer in self.level_data['layers']:
@@ -63,44 +74,35 @@ class LevelObjects:
             else:
                 self.door_fragments[destination_level].append((x, y))
 
-        for frag in self.door_fragments:
+        for frag, locations in self.door_fragments.items():
             #frag is the key ie the destination
-            new_door = Door(self.door_fragments[frag], frag)
-            print(new_door)
+            new_door = Door(locations, frag)
             self.doors.append(new_door)
 
-    def check_collisions(self, player_rect):
-        for door in self.doors:
-            collision, overlap = door.is_collision(player_rect)
-            if collision:
-                print(f"Player collided with door to {door.destination_level} at {overlap}")
-                self.door_interact_text.set_coords((250, 0))
-                self.door_interact_text.visible = True
-            else:
-                self.door_interact_text.visible = False
-            
-            
     def load_spawn_point(self, layer):
         if layer['objects']:
-            # Assuming there's only one spawn point object
+            # Assuming there's only one spawn point objects4
             spawn = layer['objects'][0]
             self.spawn_point = (spawn['x'], spawn['y'] - 40)
 
-    def update(self):
-        self.door_interact_text.update()
+    def update(self, player_rect):
+        for interactable in self.doors: #eventually should be a list of Interactables, not just doors
+            interactable.check_collision(player_rect)
 
     def render(self, screen):
-        self.door_interact_text.render(screen)
-        
+        pass
 
 
 
 class Level():
+    ''' 
+    holds the level data and objects, and loads the level from a file etc
+    '''
     def __init__(self, level):
         self.level_file = "assets/levels/" + level + "/" + level + ".tmj"
         self.bg_image = pygame.image.load("assets/levels/backgrounds/" + level + ".png")
 
-        with open(self.level_file, 'r') as file:
+        with open(self.level_file, 'r', encoding='utf-8') as file:
             self.level_data = json.load(file)
         self.terrain = LevelTerrain(self.level_data)
         self.objects = LevelObjects(self.level_data)
@@ -108,16 +110,13 @@ class Level():
 
         self.start_music()
 
-        
     def start_music(self):
+        ''' loads whatever the bg music should be for the level '''
         pygame.mixer.music.load("assets/audio/ambience/level1.wav")
         pygame.mixer.music.play(-1)
 
-    def check_collisions(self, player_rect):
-        self.objects.check_collisions(player_rect)
-
-    
-    def render_background(self, screen):
+    def render_background(self, screen: pygame.Surface):
+        ''' renders the background image for the level'''
         if self.bg_image:
             # Calculate the y-coordinate to start from the bottom-left corner
             bg_y = self.bg_image.get_height() - 500  # 512 - 480
@@ -131,6 +130,7 @@ class Level():
             print("Background image not loaded")
 
     def render(self, screen):
+        ''' renders the level to the screen'''
         # Render the static background first
         self.render_background(screen)
         self.objects.render(screen)
@@ -140,8 +140,26 @@ class Level():
 
 
     def update(self, player_rect):
-        self.check_collisions(player_rect)
-        self.objects.door_interact_text.update()
+        ''' updates the level objects'''
+        self.objects.update(player_rect)
 
-    
 
+class LevelHandler():
+    ''' 
+    this class is responsible for handling the levels in the game,
+    including transitions between, etc.
+    '''
+    def __init__(self):
+        self.current_level = None
+
+    def load_level(self, level_name):
+        ''' loads the level from a file'''
+        self.current_level = Level(level_name)
+
+    # def update(self, player_rect):
+    #     ''' updates the current level'''
+    #     self.current_level.update(player_rect)
+
+    # def render(self, screen):
+    #     ''' renders the current level'''
+    #     self.current_level.render(screen)

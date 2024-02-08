@@ -1,12 +1,15 @@
+"""
+handles the player character and other characters
+"""
+
 import pygame
-from .Entity import Entity
-from src.graphics.animation import *
+from src.graphics.animation import Animation
 from src.audio.sounds import PlayerSounds
+from .Entity import Entity
 
 class Player(Entity):
-    
     def __init__(self, x, y, display_size):
-        super(Player, self).__init__(x, y) #probably put default player image here
+        super().__init__(x, y) #probably put default player image here
         self.screen_width, self.screen_height = display_size
         self.player_scale = 0.8
         self.player_speed = 3 * (1 - self.player_scale)
@@ -20,7 +23,7 @@ class Player(Entity):
         self.image = self.idle_animation.update()
         self.rect = self.image.get_rect()
 
-        hitbox_shrink_factor = 0.45  # Adjust this value to your needs
+        hitbox_shrink_factor = 0.3  # Adjust this value to your needs
         self.rect.inflate_ip(-self.rect.width * (1 - hitbox_shrink_factor), -self.rect.height * (1 - hitbox_shrink_factor))
         self.rect.x = x
         self.rect.y = y
@@ -33,7 +36,7 @@ class Player(Entity):
         self.cooldown_factor = 10
 
 
-    def set_level_type(self, level_type):
+    def set_level_type(self, level_type: str):
         '''
         string, this will determine whether to do side scrolling or allow up and down as well.
         
@@ -102,7 +105,6 @@ class Player(Entity):
 
         # Update the mask after moving
         self.mask = pygame.mask.from_surface(self.image)
-        
 
     def update(self):
         # Handle other animations (idle, running) here
@@ -116,10 +118,3 @@ class Player(Entity):
 
         if self.sound_cooldown > 0:
             self.sound_cooldown -= 1
-
-
-
-    
-
-
-
